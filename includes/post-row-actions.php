@@ -63,7 +63,7 @@ class Post_Row_Actions {
 		return sprintf(
 			'<b><a href="%1$s" title="%2$s" rel="permalink">%2$s</a></b>',
 			$convert_url,
-			__( 'Convert to new builder', 'jet-form-builder-convert' ),
+			__( 'Convert to new builder', 'jet-form-builder-convert' )
 		);
 	}
 
