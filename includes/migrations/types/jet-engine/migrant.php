@@ -4,6 +4,7 @@ namespace Jet_Form_Builder_Converter\Migrations\Types\Jet_Engine;
 
 use Jet_Form_Builder_Converter\Block_Generator;
 use Jet_Form_Builder\Classes\Tools;
+use Jet_Form_Builder_Converter\Jet_Field_Parser;
 use Jet_Form_Builder_Converter\Migrations\Base_Migrant;
 use Jet_Form_Builder\Plugin;
 
@@ -275,7 +276,8 @@ class Migrant extends Base_Migrant {
 			'attrs'     => Tools::array_merge_intersect_key( $field_object->block_attributes( false ), $attrs ),
 			'blockName' => self::BLOCKS_NAMESPACE . $field_type,
 		);
-		$field_data = $field_object->parse_exported_data( $field_data );
+
+		$field_data = ( new Jet_Field_Parser( $field_object, $field_data ) )->response();
 		$field_data = $this->maybe_add_conditional( $current, $field_data );
 
 		return $this->maybe_add_in_column( $current, $field_data );
