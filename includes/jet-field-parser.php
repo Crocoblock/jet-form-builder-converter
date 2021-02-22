@@ -13,6 +13,12 @@ class Jet_Field_Parser {
 	private $block;
 	private $field;
 
+	private function callable_fields_parser() {
+		return array(
+			'hidden-field' => array( $this, 'parse__hidden_field' )
+		);
+	}
+
 	public function __construct( Base $block, array $field_data ) {
 		$this->block = $block;
 		$this->field = $field_data;
@@ -50,10 +56,35 @@ class Jet_Field_Parser {
 		return $dynamic_value ? ( new Preset_Migrate( $dynamic_value ) )->value() : $value;
 	}
 
+	public function parse__hidden_field() {
+		[
+			$this->field['attrs']['field_value'],
+			$this->field['attrs']['hidden_value']
+		] = [
+			$this->field['attrs']['hidden_value'],
+			$this->field['attrs']['default']
+		];
+
+	}
+
 	public function response() {
 		$this->parse_exported_data();
 
+		$this->maybe_call_field_parser( $this->block->get_name() );
+
 		return $this->field;
 	}
+
+	private function maybe_call_field_parser( $slug = false ) {
+		if ( ! $slug ) {
+			return;
+		}
+		$fields = $this->callable_fields_parser();
+
+		if ( isset( $fields[ $slug ] ) && is_callable( $fields[ $slug ] ) ) {
+			call_user_func( $fields[ $slug ] );
+		}
+	}
+
 
 }
