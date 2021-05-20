@@ -31,7 +31,7 @@ class Post_Row_Actions {
 			return $actions;
 		}
 
-		if ( jet_engine()->forms->slug() !== $post->post_type ) {
+		if ( 'jet-engine-booking' !== $post->post_type ) {
 			return $actions;
 		}
 		$action_name = Migrate_Manager::instance()->action_name();
