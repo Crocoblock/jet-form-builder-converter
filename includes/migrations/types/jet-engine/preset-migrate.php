@@ -14,15 +14,20 @@ class Preset_Migrate extends Base_Settings_Migrate {
 	}
 
 	protected function parse_value( $value ) {
+		if ( empty( $value ) ) {
+			return '';
+		}
 
-		if ( $value['from'] && 'query_vars' === $value['from'] ) {
+		if ( isset( $value['from'] ) && 'query_vars' === $value['from'] ) {
 			$value['from'] = 'query_var';
 		}
-		if ( ! in_array( $value['from'], $this->allowed_sources() ) ) {
+		if ( isset( $value['from'] ) && ! in_array( $value['from'], $this->allowed_sources() ) ) {
 			$value['from'] = '';
 		}
 
-		foreach ( $value['fields_map'] as $name => $field ) {
+		$map = $value['fields_map'] ?? array();
+
+		foreach ( $map as $name => $field ) {
 			if ( 'login' === $field['prop'] ) {
 				$value['fields_map'][ $name ]['prop'] = 'user_login';
 			}
