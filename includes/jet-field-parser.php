@@ -57,10 +57,10 @@ class Jet_Field_Parser {
 	}
 
 	public function parse__hidden_field() {
-		[
+		list(
 			$this->field['attrs']['field_value'],
 			$this->field['attrs']['hidden_value']
-		] = [
+			) = [
 			$this->field['attrs']['hidden_value'],
 			$this->field['attrs']['default']
 		];
