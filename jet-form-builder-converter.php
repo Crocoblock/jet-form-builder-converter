@@ -3,7 +3,7 @@
  * Plugin Name: JetFormBuilder Converter
  * Plugin URI:  https://crocoblock.com/
  * Description: Convert your JetEngine forms to JetFormBuilder
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Crocoblock
  * Author URI:  https://crocoblock.com/
  * Text Domain: jet-form-builder-converter
@@ -19,7 +19,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 add_action( 'plugins_loaded', function () {
-	define( 'JET_FORM_BUILDER_CONVERTER_VERSION', '1.0.0' );
+	define( 'JET_FORM_BUILDER_CONVERTER_VERSION', '1.0.1' );
 
 	define( 'JET_FORM_BUILDER_CONVERTER__FILE__', __FILE__ );
 	define( 'JET_FORM_BUILDER_CONVERTER_PLUGIN_BASE', plugin_basename( JET_FORM_BUILDER_CONVERTER__FILE__ ) );
