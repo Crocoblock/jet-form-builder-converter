@@ -1,14 +1,11 @@
 <?php
 
 
-namespace Jet_Form_Builder_Converter\Migrations\Types\Jet_Engine;
+namespace Jet_Form_Builder_Converter\Migrations\Jet_Engine;
 
 
-use Jet_Form_Builder\Classes\Factory;
 
 class Settings_Manager {
-
-	const TRANSFORMERS_NAMESPACE = 'Jet_Form_Builder_Converter\\Migrations\\Types\\Jet_Engine\\';
 
 	private $form_meta;
 
@@ -37,21 +34,19 @@ class Settings_Manager {
 			return $meta_data;
 		}
 
-		$factory = new Factory( self::TRANSFORMERS_NAMESPACE );
-		$factory->suffix( '-migrate' );
-
-
-		return $factory->create_one(
-			$meta_data['transformer'],
-			$meta_data['value']
-		)->value();
+		switch ( $meta_data['transformer'] ) {
+			case 'actions':
+				return ( new Actions_Migrate( $meta_data['value'] ) )->value();
+			case 'preset':
+				return ( new Preset_Migrate( $meta_data['value'] ) )->value();
+		}
 	}
 
 	private function save_settings( $form_meta ) {
 		$preset   = maybe_unserialize( $form_meta['_preset'][0] );
-		$messages = json_encode( maybe_unserialize( $form_meta['_messages'][0] ) );
-		$captcha  = json_encode( maybe_unserialize( $form_meta['_captcha'][0] ) );
-		$actions  = json_decode( wp_unslash( $form_meta['_notifications_data'][0] ), true );
+		$messages = wp_json_encode( maybe_unserialize( $form_meta['_messages'][0] ) );
+		$captcha  = wp_json_encode( maybe_unserialize( $form_meta['_captcha'][0] ) );
+		$actions  = wp_json_encode( wp_unslash( $form_meta['_notifications_data'][0] ), true );
 
 		return array(
 			'_jf_preset'    => array(

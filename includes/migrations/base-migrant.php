@@ -13,7 +13,15 @@ abstract class Base_Migrant {
 	protected $transformed_fields = array();
 	protected $transformed_settings = array();
 
-	public function __construct( $form_id ) {
+	abstract public function get_provider();
+
+	abstract public function source_fields();
+
+	abstract public function source_settings();
+
+	abstract public function migrate_form();
+
+	public function set_form_id( $form_id ) {
 		$this->form_id = $form_id;
 		$this->_set_form_data();
 		$this->_set_source_fields();
@@ -42,9 +50,24 @@ abstract class Base_Migrant {
 		return get_post_meta( $this->form_id );
 	}
 
-	abstract public function source_fields();
+	public function run_migrate() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$form_id = absint( $_GET['id'] ?? 0 );
 
-	abstract public function source_settings();
+		if ( ! $form_id ) {
+			return;
+		}
+		$this->set_form_id( $form_id );
 
-	abstract public function migrate_form();
+		$migrated_form_id = $this->migrate_form();
+
+		$this->redirect_to( $migrated_form_id );
+	}
+
+	public function redirect_to( $post_id ) {
+		if ( $post_id && ! $post_id instanceof \WP_Error ) {
+			wp_safe_redirect( get_edit_post_link( $post_id, '' ) );
+		}
+		die();
+	}
 }

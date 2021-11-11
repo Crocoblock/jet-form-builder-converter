@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Jet_Form_Builder_Converter\Migrations\Types\Jet_Engine;
+namespace Jet_Form_Builder_Converter\Migrations\Jet_Engine;
 
 use Jet_Form_Builder\Classes\Tools;
 use Jet_Form_Builder_Converter\Migrations\Base_Settings_Migrate;

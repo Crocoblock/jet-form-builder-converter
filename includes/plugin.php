@@ -50,7 +50,7 @@ class Plugin
     }
 
     public function init_components() {
-    	new Post_Row_Actions();
+    	new Post_Row_Actions_Jet_Engine();
 		Migrate_Manager::instance();
     }
 

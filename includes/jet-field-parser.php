@@ -5,7 +5,7 @@ namespace Jet_Form_Builder_Converter;
 
 
 use Jet_Form_Builder\Blocks\Types\Base;
-use Jet_Form_Builder_Converter\Migrations\Types\Jet_Engine\Preset_Migrate;
+use Jet_Form_Builder_Converter\Migrations\Jet_Engine\Preset_Migrate;
 
 class Jet_Field_Parser {
 

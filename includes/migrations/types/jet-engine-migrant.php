@@ -1,19 +1,20 @@
 <?php
 
-namespace Jet_Form_Builder_Converter\Migrations\Types\Jet_Engine;
+namespace Jet_Form_Builder_Converter\Migrations\Types;
 
 use Jet_Form_Builder_Converter\Block_Generator;
 use Jet_Form_Builder\Classes\Tools;
 use Jet_Form_Builder_Converter\Jet_Field_Parser;
 use Jet_Form_Builder_Converter\Migrations\Base_Migrant;
 use Jet_Form_Builder\Plugin;
+use Jet_Form_Builder_Converter\Migrations\Jet_Engine;
 
-class Migrant extends Base_Migrant {
+class Jet_Engine_Migrant extends Base_Migrant {
 
 	const BLOCKS_NAMESPACE = 'jet-forms/';
 
 	private $prepared_fields = array();
-	private $migrate_fields = array(
+	private $migrate_fields  = array(
 		'media'          => 'media-field',
 		'hidden'         => 'hidden-field',
 		'repeater_start' => 'repeater-field',
@@ -37,6 +38,10 @@ class Migrant extends Base_Migrant {
 
 	private $raw_fields;
 
+	public function get_provider() {
+		return 'jet_engine';
+	}
+
 	public function source_fields() {
 		$data = json_decode( wp_unslash( $this->form_meta_data['_form_data'][0] ), true );
 		unset( $this->form_meta_data['_form_data'] );
@@ -52,7 +57,7 @@ class Migrant extends Base_Migrant {
 
 
 	public function source_settings() {
-		$settings = new Settings_Manager( $this->form_meta_data );
+		$settings = new Jet_Engine\Settings_Manager( $this->form_meta_data );
 
 		return $settings->parse_settings()->get_all();
 	}
@@ -60,21 +65,28 @@ class Migrant extends Base_Migrant {
 	public function migrate_form() {
 		$title = sprintf( '%1$s [%2$s]', $this->form_data->post_title, current_time( 'd/m/Y H:i' ) );
 
-		return wp_insert_post( wp_slash( array(
-			'post_status'  => $this->form_data->post_status,
-			'post_type'    => Plugin::instance()->post_type->slug(),
-			'post_title'   => $title,
-			'post_author'  => $this->form_data->post_author,
-			'post_content' => $this->fields,
-			'meta_input'   => $this->settings,
-		) ) );
+		return wp_insert_post(
+			wp_slash(
+				array(
+					'post_status'  => $this->form_data->post_status,
+					'post_type'    => Plugin::instance()->post_type->slug(),
+					'post_title'   => $title,
+					'post_author'  => $this->form_data->post_author,
+					'post_content' => $this->fields,
+					'meta_input'   => $this->settings,
+				)
+			)
+		);
 	}
 
 	public function sort_raw_fields() {
 
-		usort( $this->raw_fields, function ( $first, $second ) {
-			return $first['y'] - $second['y'];
-		} );
+		usort(
+			$this->raw_fields,
+			function ( $first, $second ) {
+				return $first['y'] - $second['y'];
+			}
+		);
 
 		$column = false;
 
@@ -87,7 +99,7 @@ class Migrant extends Base_Migrant {
 
 			if ( $not_child_column ) {
 				$this->raw_fields[ $index ]['single_column_width'] = $this->calc_field_width_degrees( $current );
-				$column                                            = false;
+				$column = false;
 				continue;
 			} elseif ( ! $column ) {
 				$column = isset( $current['column_order'] ) ? $current['column_order'] : $index;
@@ -175,13 +187,14 @@ class Migrant extends Base_Migrant {
 
 		if ( ! isset( $this->raw_fields[ $column_id ]['innerBlocks'][ $current['x'] ] ) ) {
 
-			$this->raw_fields[ $column_id ]['innerBlocks'][ $field['x'] ] = $this->_get_child_column( $field['column_width'],
+			$this->raw_fields[ $column_id ]['innerBlocks'][ $field['x'] ] = $this->_get_child_column(
+				$field['column_width'],
 				array(
-					$this->get_prepare_field( $field )
+					$this->get_prepare_field( $field ),
 				),
 				array(
 					'columns'  => $field['w'],
-					'position' => $field['x']
+					'position' => $field['x'],
 				)
 			);
 		}
@@ -192,25 +205,28 @@ class Migrant extends Base_Migrant {
 			'blockName'    => 'columns',
 			'innerContent' => array(
 				'<div class="wp-block-columns">',
-				'</div>'
-			)
+				'</div>',
+			),
 		);
 
 		return $innerColumns ? array_merge( $response, array( 'innerBlocks' => $innerColumns ) ) : $response;
 	}
 
 	private function _get_child_column( $width, $innerBlocks = array(), $additional_data = array() ) {
-		return array_merge( array(
-			'attrs'        => array(
-				'width' => $width . '%'
+		return array_merge(
+			array(
+				'attrs'        => array(
+					'width' => $width . '%',
+				),
+				'blockName'    => 'column',
+				'innerBlocks'  => $innerBlocks,
+				'innerContent' => array(
+					'<div class="wp-block-column" style="flex-basis:' . $width . '%">',
+					'</div>',
+				),
 			),
-			'blockName'    => 'column',
-			'innerBlocks'  => $innerBlocks,
-			'innerContent' => array(
-				'<div class="wp-block-column" style="flex-basis:' . $width . '%">',
-				'</div>'
-			)
-		), $additional_data );
+			$additional_data
+		);
 	}
 
 	private function maybe_add_in_column( $field, $field_data ) {

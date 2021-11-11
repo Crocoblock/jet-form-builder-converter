@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Jet_Form_Builder_Converter\Migrations\Types\Jet_Engine;
+namespace Jet_Form_Builder_Converter\Migrations\Jet_Engine;
 
 
 use Jet_Form_Builder\Presets\Preset_Manager;
@@ -36,6 +36,6 @@ class Preset_Migrate extends Base_Settings_Migrate {
 			}
 		}
 
-		return json_encode( $value );
+		return wp_json_encode( $value );
 	}
 }

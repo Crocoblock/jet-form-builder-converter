@@ -2,7 +2,7 @@
 
 namespace Jet_Form_Builder_Converter\Migrations;
 
-use Jet_Form_Builder\Classes\Factory;
+use Jet_Form_Builder_Converter\Migrations\Types\Jet_Engine_Migrant;
 
 class Migrate_Manager {
 
@@ -18,40 +18,41 @@ class Migrate_Manager {
 	 */
 	public static $instance = null;
 
+	private $_types = array();
+
 	private function __construct() {
-		add_action( 
-			'admin_action_' . $this->action_name(),
-			array( $this, $this->action_name() )
+		$this->register_migrate_types();
+		$this->register_hooks();
+	}
+
+	/**
+	 * @return Base_Migrant[]
+	 */
+	protected function migrate_types(): array {
+		return array(
+			new Jet_Engine_Migrant()
 		);
 	}
 
-	public function action_name() {
-		return 'migrate_jet_engine';
+	/**
+	 * @return Base_Migrant[]
+	 */
+	public function get_migrate_types(): array {
+		return $this->_types;
 	}
 
-	public function migrate_jet_engine() {
-		$this->run_migrate( 'jet-engine' );
+	protected function register_migrate_types() {
+		foreach ( $this->migrate_types() as $type ) {
+			$this->_types[ $type->get_provider() ] = $type;
+		}
 	}
 
-	public function run_migrate( $type ) {
-		if ( ! isset( $_REQUEST['id'] ) || empty( $_REQUEST['id'] ) ) {
-			return;
-		}
-		$form_id = absint( $_REQUEST['id'] );
-
-		$migrant = ( new Factory( 'Jet_Form_Builder_Converter\\Migrations\\Types\\' ) )
-			->suffix( '\\Migrant' )
-			->create_one( $type, $form_id );
-		
-		if ( ! $migrant instanceof Base_Migrant ) {
-			return;
-		}
-
-		$form_id = $migrant->migrate_form();
-
-		if ( $form_id && ! $form_id instanceof \WP_Error ) {
-			wp_redirect( get_edit_post_link( $form_id, '' ) );
-			die();
+	private function register_hooks() {
+		foreach ( $this->get_migrate_types() as $type ) {
+			add_action(
+				'admin_action_migrate_' . $type->get_provider(),
+				array( $type, 'run_migrate' )
+			);
 		}
 	}
 
@@ -60,16 +61,17 @@ class Migrate_Manager {
 	 *
 	 * Ensures only one instance of the plugin class is loaded or can be loaded.
 	 *
+	 * @return Migrate_Manager An instance of the class.
 	 * @since 1.0.0
 	 * @access public
 	 * @static
 	 *
-	 * @return Migrate_Manager An instance of the class.
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 

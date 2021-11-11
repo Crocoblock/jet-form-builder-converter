@@ -3,16 +3,17 @@
 
 namespace Jet_Form_Builder_Converter;
 
-
-use Jet_Form_Builder_Converter\Migrations\Migrate_Manager;
-
-class Post_Row_Actions {
+abstract class Post_Row_Actions_Base {
 
 	public function __construct() {
 		add_filter( 'post_row_actions', array( $this, 'action_links' ), 20, 2 );
 	}
 
-	public function check_user_access( $post_id = null ) {
+	abstract public function get_provider(): string;
+
+	abstract public function get_post_type(): string;
+
+	public function check_user_access( $post_id = null ): bool {
 		$res = true;
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
@@ -26,17 +27,16 @@ class Post_Row_Actions {
 		return $res;
 	}
 
+	public function check_access( $post ): bool {
+		return ( $this->check_user_access( $post->ID ) && 'jet-engine-booking' === $post->post_type );
+	}
+
 	public function action_links( $actions, $post ) {
-		if ( ! $this->check_user_access( $post->ID ) ) {
+		if ( ! $this->check_access( $post ) ) {
 			return $actions;
 		}
 
-		if ( 'jet-engine-booking' !== $post->post_type ) {
-			return $actions;
-		}
-		$action_name = Migrate_Manager::instance()->action_name();
-
-		$actions[ $action_name ] = $this->get_converted_url( $post->ID );
+		$actions[ $this->get_provider() ] = $this->get_converted_url( $post->ID );
 
 		$trash = ! empty( $actions['trash'] ) ? $actions['trash'] : false;
 
@@ -48,13 +48,12 @@ class Post_Row_Actions {
 		return $actions;
 	}
 
-	private function get_converted_url( $id ) {
-		$action_name = Migrate_Manager::instance()->action_name();
-		$admin_url   = esc_url( admin_url() );
+	private function get_converted_url( $id ): string {
+		$admin_url = esc_url_raw( admin_url() );
 
 		$convert_url = add_query_arg(
 			array(
-				'action' => $action_name,
+				'action' => 'migrate_' . $this->get_provider(),
 				'id'     => $id,
 			),
 			$admin_url
@@ -66,5 +65,4 @@ class Post_Row_Actions {
 			__( 'Convert to new builder', 'jet-form-builder-convert' )
 		);
 	}
-
 }
