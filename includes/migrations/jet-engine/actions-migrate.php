@@ -40,11 +40,15 @@ class Actions_Migrate extends Base_Settings_Migrate {
 		return wp_json_encode( $prepared_actions );
 	}
 
-	public function get_action_attributes( $type ) {
+	public function get_action_attributes( $type ): array {
 		$manager = Plugin::instance()->actions;
+		$action  = $manager->get_actions( $type );
 
-		return $manager->get_actions( $type )->action_attributes();
+		if ( method_exists( $action, 'action_attributes' ) ) {
+			return $action->action_attributes();
+		}
 
+		return array();
 	}
 
 	public function get_action_type( $action ) {
