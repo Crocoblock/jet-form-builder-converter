@@ -46,7 +46,7 @@ class Settings_Manager {
 		$preset   = maybe_unserialize( $form_meta['_preset'][0] );
 		$messages = wp_json_encode( maybe_unserialize( $form_meta['_messages'][0] ) );
 		$captcha  = wp_json_encode( maybe_unserialize( $form_meta['_captcha'][0] ) );
-		$actions  = wp_json_encode( wp_unslash( $form_meta['_notifications_data'][0] ), true );
+		$actions  = json_decode( wp_unslash( $form_meta['_notifications_data'][0] ), true );
 
 		return array(
 			'_jf_preset'    => array(

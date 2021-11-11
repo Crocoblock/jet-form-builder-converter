@@ -28,7 +28,7 @@ class Actions_Migrate extends Base_Settings_Migrate {
 			}
 
 			$prepared_actions[] = array(
-				'id'       => rand( 1000, 9999 ),
+				'id'       => wp_rand( 1000, 9999 ),
 				'type'     => $type,
 				'settings' => Tools::array_merge_intersect_key(
 					$this->get_action_attributes( $type ),
@@ -37,7 +37,7 @@ class Actions_Migrate extends Base_Settings_Migrate {
 			);
 		}
 
-		return json_encode( $prepared_actions );
+		return wp_json_encode( $prepared_actions );
 	}
 
 	public function get_action_attributes( $type ) {
