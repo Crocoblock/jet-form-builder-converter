@@ -25,7 +25,7 @@ class Jet_Field_Parser {
 	}
 
 	public function parse_exported_data() {
-		$field_attrs = $this->block->block_attributes( false );
+		$field_attrs = Utils::get_attrs( $this->block );
 
 		foreach ( $this->field['attrs'] as $attribute => $value ) {
 			if ( ! isset( $field_attrs[ $attribute ] ) ) {

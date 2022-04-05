@@ -2,12 +2,14 @@
 
 namespace Jet_Form_Builder_Converter\Migrations\Types;
 
+use Jet_Form_Builder\Blocks\Types\Base;
 use Jet_Form_Builder_Converter\Block_Generator;
 use Jet_Form_Builder\Classes\Tools;
 use Jet_Form_Builder_Converter\Jet_Field_Parser;
 use Jet_Form_Builder_Converter\Migrations\Base_Migrant;
 use Jet_Form_Builder\Plugin;
 use Jet_Form_Builder_Converter\Migrations\Jet_Engine;
+use Jet_Form_Builder_Converter\Utils;
 
 class Jet_Engine_Migrant extends Base_Migrant {
 
@@ -288,8 +290,12 @@ class Jet_Engine_Migrant extends Base_Migrant {
 
 		$field_object = Plugin::instance()->blocks->get_field_by_name( $field_type );
 
+		if ( ! $field_object ) {
+			return;
+		}
+
 		$field_data = array(
-			'attrs'     => Tools::array_merge_intersect_key( $field_object->block_attributes( false ), $attrs ),
+			'attrs'     => Tools::array_merge_intersect_key( Utils::get_attrs( $field_object ), $attrs ),
 			'blockName' => self::BLOCKS_NAMESPACE . $field_type,
 		);
 
