@@ -356,7 +356,7 @@ class Migrant extends BaseMigrant {
 	}
 
 	private function get_field_type( $field ) {
-		return $this->migrate_fields[ $field['type'] ];
+		return $this->migrate_fields[ $field['type'] ?? '' ] ?? '';
 	}
 
 	/**
