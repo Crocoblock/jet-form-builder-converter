@@ -5,6 +5,8 @@ namespace JFB\Converter\PostType;
 
 abstract class PostRowActionsBase {
 
+	const NONCE_ACTION = 'jet_fb_convert_form';
+
 	public function init_hooks() {
 		add_filter( 'post_row_actions', array( $this, 'action_links' ), 20, 2 );
 	}
@@ -53,8 +55,9 @@ abstract class PostRowActionsBase {
 
 		$convert_url = add_query_arg(
 			array(
-				'action' => 'migrate_' . $this->get_provider(),
-				'id'     => $id,
+				'action'   => 'migrate_' . $this->get_provider(),
+				'id'       => $id,
+				'_wpnonce' => wp_create_nonce( self::NONCE_ACTION ),
 			),
 			$admin_url
 		);

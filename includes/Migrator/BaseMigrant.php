@@ -2,6 +2,8 @@
 
 namespace JFB\Converter\Migrator;
 
+use JFB\Converter\PostType\PostRowActionsBase;
+
 abstract class BaseMigrant {
 
 	protected $form_id;
@@ -45,7 +47,12 @@ abstract class BaseMigrant {
 			return;
 		}
 
-		if ( ! current_user_can( 'publish_jet_fb_forms' ) ) {
+		if ( ! wp_verify_nonce(
+			sanitize_key( $_GET['_wpnonce'] ?? '' ),
+			PostRowActionsBase::NONCE_ACTION
+		) ||
+			! current_user_can( 'publish_jet_fb_forms' )
+		) {
 			wp_die(
 				esc_html__(
 					'You do not have permission to create a new form (post type jet-form-builder)',
