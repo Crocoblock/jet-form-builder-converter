@@ -12,20 +12,24 @@
  * Domain Path: /languages
  */
 
-
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die();
 }
 
-add_action( 'plugins_loaded', function () {
-	define( 'JET_FORM_BUILDER_CONVERTER_VERSION', '1.0.1' );
+require_once __DIR__ . '/vendor/autoload.php';
 
-	define( 'JET_FORM_BUILDER_CONVERTER__FILE__', __FILE__ );
-	define( 'JET_FORM_BUILDER_CONVERTER_PLUGIN_BASE', plugin_basename( JET_FORM_BUILDER_CONVERTER__FILE__ ) );
-	define( 'JET_FORM_BUILDER_CONVERTER_PATH', plugin_dir_path( JET_FORM_BUILDER_CONVERTER__FILE__ ) );
-	define( 'JET_FORM_BUILDER_CONVERTER_URL', plugins_url( '/', JET_FORM_BUILDER_CONVERTER__FILE__ ) );
+add_action(
+	'plugins_loaded',
+	function () {
+		define( 'JET_FORM_BUILDER_CONVERTER_VERSION', '1.0.1' );
 
-	require JET_FORM_BUILDER_CONVERTER_PATH . 'includes' . DIRECTORY_SEPARATOR . 'plugin.php';
-} );
+		define( 'JET_FORM_BUILDER_CONVERTER__FILE__', __FILE__ );
+		define( 'JET_FORM_BUILDER_CONVERTER_PLUGIN_BASE', plugin_basename( JET_FORM_BUILDER_CONVERTER__FILE__ ) );
+		define( 'JET_FORM_BUILDER_CONVERTER_PATH', plugin_dir_path( JET_FORM_BUILDER_CONVERTER__FILE__ ) );
+		define( 'JET_FORM_BUILDER_CONVERTER_URL', plugins_url( '/', JET_FORM_BUILDER_CONVERTER__FILE__ ) );
 
+		\JFB\Converter\Plugin::instance();
+	},
+	100
+);

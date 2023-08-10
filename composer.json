@@ -1,0 +1,17 @@
+{
+    "name": "crocoblock/jet-form-builder-converter",
+    "description": "Converter from JetEngine Forms to JetFormBuilder",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Sasha Ivanenko",
+            "email": "46720998+girafffee@users.noreply.github.com"
+        }
+    ],
+	"autoload": {
+		"psr-4": {
+			"JFB\\Converter\\": "includes/",
+			"JFB\\Converter\\Compatibility\\": "compatibility/"
+		}
+	}
+}
